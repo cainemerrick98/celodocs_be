@@ -6,3 +6,5 @@ An API that can receive queries about the celonis platform, find the relevant in
 
 Essentially its a RAG pipeline for my teams technical product documentation
 
+I plan to deploy the API and provide a borwser extension interface to interact with the product
+
