@@ -1,6 +1,16 @@
 import bs4
 import celodocs.extraction as extraction
 import unittest
+import os
+
+EXAMPLES_PATH = r'tests\test_examples'
+
+def get_html_example(file_name:str) -> bs4.BeautifulSoup:
+    print(os.path.join(os.getcwd(), EXAMPLES_PATH, file_name))
+    with open(os.path.join(os.getcwd(), EXAMPLES_PATH, file_name), 'r') as file:
+        data = file.read()
+        
+    return bs4.BeautifulSoup(data, 'html.parser')
 
 class TestExtractionModule(unittest.TestCase):
 
@@ -37,7 +47,7 @@ class TestExtractionModule(unittest.TestCase):
         ul = bs4.Tag(name='ul')
         self.assertFalse(extraction.is_table_element(ul))
 
-    def test_is_pql_example(self):
+    def test_is_pql_example_1(self):
         soup = bs4.BeautifulSoup("<body><table><thead><th>Example</th><thead><tbody><tr><td><table><thead><tr><th>Query</th></tr></thead></table></td></tr></tbody></table></body>",
                                         'html.parser')
         pql_example = soup.find('table')
@@ -47,6 +57,12 @@ class TestExtractionModule(unittest.TestCase):
         table = bs4.Tag(name='table')
         self.assertFalse(extraction.is_pql_example(table))
 
+    def test_extract_pql_example(self):
+        pql_example = get_html_example('pu_sum_example_1.html')
+        table = pql_example.find('table')
+        self.assertTrue(extraction.is_pql_example(table))
+        #use print to validate format.
+        print(extraction.extract_pql_example(table))
     
 
 

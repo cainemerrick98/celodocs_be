@@ -33,7 +33,7 @@ def is_table_element(tag:Tag):
 def is_pql_example(tag:Tag):
     if tag.name == 'table':
         if tag.find_next('table') is not None:
-            return tag.find_next('table').find_next('th').text == 'Query'
+            return tag.find_next('table').find_next('th').get_text(strip=True) == 'Query'
     return False
 
 def extract_text(tag:Tag):
@@ -43,15 +43,29 @@ def extract_list(tag:Tag):
     items = map(lambda x: x.get_text(strip=True), tag.find_all('li'))
     return ','.join(items)
 
-def extract_pql_example(tag:Tag):
-    return 
-
 def extract_table(tag:Tag):
     rows = [[value.get_text(strip=True) for value in row] for row in tag.find_all('tr')]
+    rows = [[value for value in row if value != ""] for row in rows]
     csv_table = [','.join(row) for row in rows]
     csv_table = '\n'.join(csv_table)
     return csv_table
 
+def extract_pql_example(tag:Tag):
+    description = tag.find_all('p')[1].get_text(strip=True)
+    queries = list(map(lambda x: x.get_text(strip=True), tag.find_all('pre')))
+
+    sub_tables = tag.find_all('table')
+    input_tables = list(map(extract_table, sub_tables[2:-1]))
+    output_table = extract_table(sub_tables[-1])
+    
+    pql_example = (
+        f"{description}\n\n"
+        "Queries:\n" + ",\n".join(queries) + "\n\n"
+        "Input tables:\n" + "\n\n".join(input_tables) + "\n\n"
+        f"Output:\n{output_table}"
+    )  
+
+    return pql_example
 
 
 
