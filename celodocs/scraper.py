@@ -6,8 +6,7 @@ BASE_URL = r'https://docs.celonis.com/en/'
 LINKS_URL = r'https://docs.celonis.com/en/getting-started-with-the-celonis-platform.html'
 UNWANTED = ['Release Notes']
 
-def scrape_celonis_documentation():
-    document_links = extract_document_links()
+def scrape_celonis_documentation(document_links:list[str]):
     for link in document_links:
         soup_tags = extract_soup_tags(link)
         page_content = extract_page_content(soup_tags)
@@ -28,8 +27,10 @@ def extract_soup_tags(link):
 def extract_main_content_tags(root:Tag):
     tags = []
     for tag in root.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'p', 'pre', 'code', 'table', 'ul', 'ol']):
-        if tag.name == 'p' and tag.find_parent(['li', 'ul', 'ol']):
+        if tag.name in ['p', 'code', 'pre'] and tag.find_parent(['li', 'ul', 'ol', 'table']):
             continue 
+        elif tag.name == 'table' and tag.find_parent('table'):
+            continue
         else:
             tags.append(tag)
     

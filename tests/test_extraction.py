@@ -5,6 +5,7 @@ import os
 from celodocs.scraper import extract_main_content_tags
 
 EXAMPLES_PATH = r'tests\test_examples'
+OUTPUTS_PATH = r'tests\test_page_outputs'
 
 def get_html_example(file_name:str) -> bs4.BeautifulSoup:
     print(os.path.join(os.getcwd(), EXAMPLES_PATH, file_name))
@@ -12,6 +13,11 @@ def get_html_example(file_name:str) -> bs4.BeautifulSoup:
         data = file.read()
         
     return bs4.BeautifulSoup(data, 'html.parser')
+
+def write_to_text_file(file_name:str, data:str) -> None:
+    with open(os.path.join(os.getcwd(), OUTPUTS_PATH, file_name), 'w') as file:
+        file.write(data)
+    return None
 
 class TestExtractionModule(unittest.TestCase):
 
@@ -69,6 +75,12 @@ class TestExtractionModule(unittest.TestCase):
         afm = get_html_example('action_flow_modules.html')
         tags = extract_main_content_tags(afm)
         page_content = extraction.extract_page_content(tags)
-        print(page_content)
+        write_to_text_file('action_flow_modules.txt', page_content)
+
+    def test_pu_avg_html(self):
+        pu_avg = get_html_example('pu_avg.html')
+        tags = extract_main_content_tags(pu_avg)
+        page_content = extraction.extract_page_content(tags)
+        write_to_text_file('pu_avg.txt', page_content)
 
     

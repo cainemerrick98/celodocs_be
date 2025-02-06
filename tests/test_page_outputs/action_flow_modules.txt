@@ -1,0 +1,64 @@
+Action Flow modules
+
+In Action Flow, a module is a building block you use to create an Action Flow. Think of it as bricks that you put together to automate your processes.
+
+Each module performs a particular action, such as retrieving data from a service, creating or updating a record, downloading a file, or searching for specific data based on certain conditions. For example, your Action Flow can have three modules: one module watches for new customer data in a CRM, the second module converts the data into another format, and the last module sends that information to a different service.
+
+You can find all available modules in the app list when selecting a specific app in the Action Flow.
+
+Understanding each module type helps you navigate Celonis Platform more easily, build advanced Action Flows, and optimize operations while reducing costs.
+
+Modules can be split into two groups based on whether they need to connect to a service or use a third-party API. There are two types:
+
+App modules,Tools
+
+You can categorize modules into the following groups depending on what they do with data in Celonis Platform:
+
+Triggers,Actions,Searches,Universal modules
+
+App modules
+
+When adding an app module, you need to create a connection to start working with them. Each module serves a specific action. For example, to get data, create a record, or delete a profile in your service account. You can associate a certain app module with a specific service API endpoint.
+
+LinkedIn, Google Sheets, HubSpot CRM, Trello have their dedicated modules in Celonis Platform. For more information, see Modules for third-party apps and Modules for Celonis apps.
+
+Tool modules
+
+With tools, you don't need to set up a connection nor use a third-party API. Instead, you enter your data or customize module settings, and the module is ready to work. Examples include Iterator, Aggregator, Data store, Compose a string, Set variable, and many more.
+
+These modules are ready to go as soon as you add them. However, some tools might require some setup before you can use them.
+
+Triggers
+
+A trigger is a module used to track changes in a service and pulls it to Celonis Platform so you can use the data in your Action Flow. A trigger only shows new data from your service account. Each time an Action Flow processes trigger data, it's data that hasn't been processed before in that Action Flow.
+
+For example, a trigger might detect when a new record is created, or an old record is deleted.
+
+You can add a trigger only once in the Action Flow as the first module. This ensures that the trigger initiates the Action Flow by detecting the relevant changes and pulling in the data for further processing.
+
+Important
+
+In Action Flow, we also have Triggers which are sets of criteria that, when met, can by used to execute various subscribers. Triggers are broader in scope than trigger modules and can be used outside of Action Flows too. See Triggers.
+
+Actions
+
+An Action module processes the data retrieved from a service. It’s one of the most commonly used modules in Action Flows.
+
+You can include as many as you need and position them anywhere in your Action Flow.
+
+There are the following types of action modules in Action Flows:
+
+Get,Create,Update,Delete
+
+Some actions are specific to the service, such as pin, save, or download.
+
+Searches
+
+A Search module helps you to get specific data from a service such as records, profiles, or other objects.
+
+Search modules are flexible. You can add as many as you need and place them anywhere within your scenario.
+
+Universal modules
+
+A universal module allows you to make a custom API call to a service when Celonis Platform doesn't provide a pre-built module for an API endpoint you need. This module is available for most services. You may need to refer to the service API documentation to see a full list of available API endpoints.
+
