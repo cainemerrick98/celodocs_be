@@ -26,7 +26,7 @@ def extract_soup_tags(link):
 
 def extract_main_content_tags(root:Tag):
     tags = []
-    for tag in root.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'p', 'pre', 'code', 'table', 'ul', 'ol']):
+    for tag in root.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'pre', 'code', 'table', 'ul', 'ol']):
         if tag.name in ['p', 'code', 'pre'] and tag.find_parent(['li', 'ul', 'ol', 'table']):
             continue 
         elif tag.name == 'table' and tag.find_parent('table'):

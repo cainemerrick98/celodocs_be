@@ -1,6 +1,12 @@
+PU_AVG
+
+Description
+
 Calculates the average of the specified source column for each element in the given target table.
 
 Like the regular AVG operator, the column can either be an INT or FLOAT column. The data type of the result is always a FLOAT.
+
+Syntax
 
 PU_AVG( target_table, source_table.column[, filter_expression])
 
@@ -8,7 +14,11 @@ target_table: The table to which the aggregation result should be pulled. This c
 
 a table from the data model. It needs to be, directly or indirectly, connected to the source_table, and there must be a 1:N relationship between the target_table and the source_table. Further documentation about join relationships can be found in Join functionality.,DOMAIN_TABLE or CONSTANT(see Pull Up Aggregation Table Options).
 
+NULL handling
+
 If no value in the source table column exists for the element in the target table(either because all values of the source table are filtered out, or because no corresponding value exists in the first place), NULL will be returned. NULL values in the source table column are treated as if the row does not exist.
+
+Examples
 
 
 
@@ -280,6 +290,8 @@ Column1: int,Column2: float
 caseId: int,companyCode: string,value: int
 
 
+
+See also:
 
 AVG
 

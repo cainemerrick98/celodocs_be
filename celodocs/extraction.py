@@ -23,7 +23,7 @@ def tag_to_content(tag:Tag):
     raise ValueError(f'{Tag} has no identifier function')
 
 def is_text_element(tag:Tag):
-    return tag.name in ['h1', 'h2', 'h3', 'h4', 'h5', 'p', 'code', 'pre']
+    return tag.name in ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'code', 'pre']
 
 def is_list_element(tag:Tag):
     return tag.name in ['ul', 'ol']
@@ -63,6 +63,7 @@ def extract_pql_example(tag:Tag):
     output_table = extract_table(sub_tables[-1])
     
     pql_example = (
+        "PQL Example"
         f"{description}\n\n"
         "Queries:\n" + ",\n".join(queries) + "\n\n"
         "Input tables:\n" + "\n\n".join(input_tables) + "\n\n"
