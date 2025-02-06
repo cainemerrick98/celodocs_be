@@ -2,6 +2,7 @@ import bs4
 import celodocs.extraction as extraction
 import unittest
 import os
+from celodocs.scraper import extract_main_content_tags
 
 EXAMPLES_PATH = r'tests\test_examples'
 
@@ -64,6 +65,10 @@ class TestExtractionModule(unittest.TestCase):
         #use print to validate format.
         print(extraction.extract_pql_example(table))
     
+    def test_action_flow_modules_html(self):
+        afm = get_html_example('action_flow_modules.html')
+        tags = extract_main_content_tags(afm)
+        page_content = extraction.extract_page_content(tags)
+        print(page_content)
 
-
-        
+    

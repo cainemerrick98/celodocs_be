@@ -1,4 +1,5 @@
 from bs4 import Tag
+import regex as re
 
 def extract_page_content(tags:list[Tag]):
     page_content = ''
@@ -11,7 +12,7 @@ def tag_to_content(tag:Tag):
     identifiers_and_extractors = [
         (is_text_element, extract_text),
         (is_list_element, extract_list),
-        (is_pql_example, extract_pql_example) #special case of PQL examples,
+        (is_pql_example, extract_pql_example), #special case of PQL examples
         (is_table_element, extract_table),
     ]
 
@@ -37,7 +38,7 @@ def is_pql_example(tag:Tag):
     return False
 
 def extract_text(tag:Tag):
-    return tag.get_text(strip=True)
+    return re.sub(r'\s([^\w\s])', r'\1', tag.get_text(separator=' ', strip=True))
 
 def extract_list(tag:Tag):
     items = map(lambda x: x.get_text(strip=True), tag.find_all('li'))

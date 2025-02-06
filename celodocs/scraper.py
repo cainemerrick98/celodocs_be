@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup, Tag
-from extraction import extract_page_content
+from celodocs.extraction import extract_page_content
 import requests
 
 BASE_URL = r'https://docs.celonis.com/en/'
@@ -23,7 +23,14 @@ def extract_soup_tags(link):
     resp = requests.get(rf'{BASE_URL + link}')    
     soup = BeautifulSoup(resp.text, 'html.parser')
     root = soup.find('section')
-    return list(root.find_all(
-        ['h1', 'h2', 'h3', 'h4', 'h5', 'p', 'pre', 'code', 'table', 'ul', 'ol']
-    ))
+    return extract_main_content_tags(root)
 
+def extract_main_content_tags(root:Tag):
+    tags = []
+    for tag in root.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'p', 'pre', 'code', 'table', 'ul', 'ol']):
+        if tag.name == 'p' and tag.find_parent(['li', 'ul', 'ol']):
+            continue 
+        else:
+            tags.append(tag)
+    
+    return tags
