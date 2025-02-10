@@ -5,7 +5,8 @@ def extract_page_content(tags:list[Tag]):
     page_content = ''
     for tag in tags:
         page_content += tag_to_content(tag)
-        page_content += '\n\n'
+        page_content += ' '
+        
     return page_content
 
 def tag_to_content(tag:Tag):
@@ -33,7 +34,7 @@ def is_table_element(tag:Tag):
 
 def is_pql_example(tag:Tag):
     if tag.name == 'table':
-        if tag.find_next('table') is not None:
+        if tag.find('table') is not None:
             return tag.find_next('table').find_next('th').get_text(strip=True) == 'Query'
     return False
 
@@ -47,28 +48,33 @@ def extract_list(tag:Tag):
     items = map(lambda x: extract_text(x), tag.find_all('li'))
     return ','.join(items)
 
-def extract_table(tag:Tag):
+def extract_table_data(tag:Tag):
     rows = [[extract_text(value) for value in row] for row in tag.find_all('tr')]
     rows = [[value for value in row if value != ""] for row in rows]
     csv_table = [','.join(row) for row in rows]
     csv_table = '\n'.join(csv_table)
     return csv_table
 
+def extract_table(tag:Tag):
+    return f'<table>{extract_table_data(tag)}</table>'
+
 def extract_pql_example(tag:Tag):
     description = extract_text(tag.find_all('p')[1])
     queries = list(map(lambda x: extract_text(x), tag.find_all('pre')))
     
     sub_tables = tag.find_all('table')
-    input_tables = list(map(extract_table, sub_tables[2:-2]))
-    output_table = extract_table(sub_tables[-1])
+    input_tables = list(map(extract_table_data, sub_tables[2:-2]))
+    output_table = extract_table_data(sub_tables[-1])
     
     pql_example = (
-        "PQL Example"
-        f"{description}\n\n"
-        "Queries:\n" + ",\n".join(queries) + "\n\n"
-        "Input tables:\n" + "\n\n".join(input_tables) + "\n\n"
+        "<pql_example>"
+        f"Description: {description} "
+        "Queries: " + ",".join(queries) +
+        "Input tables:" + "\n".join(input_tables) +
         f"Output:\n{output_table}"
-    )  
+        "</pql_example>"
+    )
+      
 
     return pql_example
 

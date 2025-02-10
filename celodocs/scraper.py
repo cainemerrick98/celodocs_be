@@ -7,16 +7,30 @@ LINKS_URL = r'https://docs.celonis.com/en/getting-started-with-the-celonis-platf
 UNWANTED = ['Release Notes']
 
 def scrape_celonis_documentation(document_links:list[str]):
+    documents = []
     for link in document_links:
+        print(link)
         soup_tags = extract_soup_tags(link)
-        page_content = extract_page_content(soup_tags)
-        yield page_content
+        documents.append(extract_page_content(soup_tags))
+    
+    return documents
 
 def extract_document_links() -> list[str]:
     resp = requests.get(LINKS_URL)
     soup = BeautifulSoup(resp.text, 'html.parser')
     sidebar = soup.find('ul', attrs={'class':['toc', 'nav', 'nav-site-sidebar']})
     return list(map(lambda x: x.get('href'), sidebar.find_all('a', recursive=True)))
+
+def extract_pql_function_documents():
+    """
+    temp function for some testing
+    """
+    resp = requests.get(LINKS_URL)
+    soup = BeautifulSoup(resp.text, 'html.parser')
+    pql_li = soup.find('a', attrs={'href':'pql-function-library.html'}).parent
+    links = list(map(lambda x: x.get('href'), pql_li.find_all('a', recursive=True)))
+    return links
+
 
 def extract_soup_tags(link):
     resp = requests.get(rf'{BASE_URL + link}')    

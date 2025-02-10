@@ -1,1 +1,3 @@
 venv/
+documents.json
+embeddings.npy
