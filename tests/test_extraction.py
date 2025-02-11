@@ -89,4 +89,10 @@ class TestExtractionModule(unittest.TestCase):
         page_content = extraction.extract_page_content(tags)
         write_to_text_file('round_year.txt', page_content)
 
+    def test_match_process_html(self):
+        mp = get_html_example('match_process.html')
+        tags = extract_main_content_tags(mp)
+        page_content = extraction.extract_page_content(tags)
+        write_to_text_file('match_process.txt', page_content)
+
     
