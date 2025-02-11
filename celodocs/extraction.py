@@ -62,17 +62,17 @@ def extract_pql_example(tag:Tag):
     description = extract_text(tag.find_all('p')[1])
     queries = list(map(lambda x: extract_text(x), tag.find_all('pre')))
     
-    sub_tables = tag.find_all('table')
-    input_tables = list(map(extract_table_data, sub_tables[2:-2]))
+    sub_tables = tag.find_next('table').find_next('table').find_all('table')
+    input_tables = list(map(extract_table_data, sub_tables[0:-1]))
     output_table = extract_table_data(sub_tables[-1])
     
     pql_example = (
-        "<pql_example>"
-        f"Description: {description} "
-        "Queries: " + ",".join(queries) +
-        "Input tables:" + "\n".join(input_tables) +
+        "\n<pql_example>"
+        f"Description: {description}\n"
+        "Queries: " + ",".join(queries) + "\n"
+        "Input tables:" + "\n".join(input_tables) + "\n"
         f"Output:\n{output_table}"
-        "</pql_example>"
+        "</pql_example>\n"
     )
       
 

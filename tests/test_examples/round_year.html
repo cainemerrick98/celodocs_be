@@ -1,0 +1,218 @@
+<section xml:lang="en" lang="en" dir="ltr" class="section taxonomy_celonis_pql"
+    data-origin-id="UUID-71864d1c-0e82-e2ad-9242-22ee1a172485" data-permalink="round_year.html" data-topic-level="1"
+    data-relative-prefix="" data-time-modified="10/11/2024" data-publication-date="02/10/2025"
+    id="UUID-071ea085-5621-a7b9-024c-7e82fa52911d">
+    <div class="titlepage">
+        <div>
+            <div class="title">
+                <h6 class="title">ROUND_YEAR<a class="header-link"
+                        data-anchorid="#UUID-071ea085-5621-a7b9-024c-7e82fa52911d" data-original-title="" title=""><i
+                            class="fa fa-link"></i></a></h6>
+            </div>
+        </div>
+    </div><a id="al_idp523653"></a>
+    <section dir="ltr" class="section" data-origin-id="" data-publication-date="02/10/2025" id="idp523653">
+        <div class="titlepage">
+            <div>
+                <div class="title">
+                    <h6 class="title">Description<a class="header-link" data-anchorid="#idp523653"
+                            data-original-title="" title=""><i class="fa fa-link"></i></a></h6>
+                </div>
+            </div>
+        </div>
+        <p>This function rounds a <a class="link linktype-component" href="date.html" title="DATE">DATE</a> input down
+            to the year by setting its MONTH, DAY, HOUR, MINUTE, SECOND and MILLISECOND values to their ground state.
+        </p>
+    </section><a id="al_idp523657"></a>
+    <section dir="ltr" class="section" data-origin-id="" data-publication-date="02/10/2025" id="idp523657">
+        <div class="titlepage">
+            <div>
+                <div class="title">
+                    <h6 class="title">Syntax<a class="header-link" data-anchorid="#idp523657" data-original-title=""
+                            title=""><i class="fa fa-link"></i></a></h6>
+                </div>
+            </div>
+        </div>
+        <div class="paligocode-wrapper" style="position: relative;">
+            <pre class="programlisting hljs language-css"> ROUND_YEAR ( <span class="hljs-selector-tag">table</span><span class="hljs-selector-class">.date_column</span> )
+</pre><button class="btn btn-xs btn-primary" title="Copy to clipboard"
+                style="position: absolute; top: 0px; right: 0px;"><i class="fa fa-clipboard small"
+                    aria-hidden="true"></i></button>
+        </div>
+    </section><a id="al_idp523660"></a>
+    <section dir="ltr" class="section" data-origin-id="" data-publication-date="02/10/2025" id="idp523660">
+        <div class="titlepage">
+            <div>
+                <div class="title">
+                    <h6 class="title">NULL handling<a class="header-link" data-anchorid="#idp523660"
+                            data-original-title="" title=""><i class="fa fa-link"></i></a></h6>
+                </div>
+            </div>
+        </div>
+        <p>If the input value is NULL, then the result is NULL as well.</p>
+    </section><a id="al_idp523663"></a>
+    <section dir="ltr" class="section" data-origin-id="" data-publication-date="02/10/2025" id="idp523663">
+        <div class="titlepage">
+            <div>
+                <div class="title">
+                    <h6 class="title">Example<a class="header-link" data-anchorid="#idp523663" data-original-title=""
+                            title=""><i class="fa fa-link"></i></a></h6>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <div class="informaltable table-responsive">
+            <table style="width:100%;" class="informaltable frame-box rules-none">
+                <tbody>
+                    <tr>
+                        <td class="td">
+                            <p> <span class="bold"><strong> [1] </strong></span> </p>
+                            <p>Round dates down to the year:</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td">
+                            <div class="informaltable table-responsive">
+                                <table style="width:100%;" class="informaltable frame-box rules-none">
+                                    <thead>
+                                        <tr>
+                                            <th class="th tableheader" data-priority="1">
+                                                <p>Query</p>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="td">
+                                                <p> <span class="bold"><strong> Column1 </strong></span> </p>
+                                                <div class="paligocode-wrapper" style="position: relative;">
+                                                    <pre class="programlisting hljs language-bash">         ROUND_YEAR ( <span class="hljs-string">"Table1"</span>.<span class="hljs-string">"Date"</span> )
+        </pre><button class="btn btn-xs btn-primary" title="Copy to clipboard"
+                                                        style="position: absolute; top: 0px; right: 0px;"><i
+                                                            class="fa fa-clipboard small"
+                                                            aria-hidden="true"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td">
+                            <div class="informaltable table-responsive">
+                                <table style="width:100%;" class="informaltable frame-box rules-none">
+                                    <thead>
+                                        <tr>
+                                            <th class="th tableheader" data-priority="1">
+                                                <p>Input</p>
+                                            </th>
+                                            <th class="th tableheader" data-priority="1">
+                                                <p>Output</p>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="td">
+                                                <p> <span class="bold"><strong> Table1 </strong></span> </p>
+                                                <div class="informaltable table-responsive">
+                                                    <table style="width:100%;"
+                                                        class="informaltable frame-box rules-none">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="th tableheader" data-priority="1">
+                                                                    <p>Date : date</p>
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="td">
+                                                                    <p>Mon May 08 2006 23:59:59.999</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="td">
+                                                                    <p>Fri Dec 31 1999 23:59:59.999</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="td">
+                                                                    <p>Fri Jan 01 2016 00:59:59.000</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="td">
+                                                                    <p>Sat Jan 01 1994 00:00:00.000</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="td">
+                                                                    <p> <span class="emphasis"><em> null </em></span>
+                                                                    </p>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <p></p>
+                                                <p></p>
+                                            </td>
+                                            <td class="td">
+                                                <p> <span class="bold"><strong> Result </strong></span> </p>
+                                                <div class="informaltable table-responsive">
+                                                    <table style="width:100%;"
+                                                        class="informaltable frame-box rules-none">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="th tableheader" data-priority="1">
+                                                                    <p>Column1 : date</p>
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td class="td">
+                                                                    <p>Sun Jan 01 2006 00:00:00.000</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="td">
+                                                                    <p>Fri Jan 01 1999 00:00:00.000</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="td">
+                                                                    <p>Fri Jan 01 2016 00:00:00.000</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="td">
+                                                                    <p>Sat Jan 01 1994 00:00:00.000</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="td">
+                                                                    <p> <span class="emphasis"><em> null </em></span>
+                                                                    </p>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <p></p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p></p>
+    </section>
+</section>

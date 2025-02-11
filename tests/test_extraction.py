@@ -82,5 +82,11 @@ class TestExtractionModule(unittest.TestCase):
         tags = extract_main_content_tags(pu_avg)
         page_content = extraction.extract_page_content(tags)
         write_to_text_file('pu_avg.txt', page_content)
+    
+    def test_round_year_html(self):
+        pu_avg = get_html_example('round_year.html')
+        tags = extract_main_content_tags(pu_avg)
+        page_content = extraction.extract_page_content(tags)
+        write_to_text_file('round_year.txt', page_content)
 
     
