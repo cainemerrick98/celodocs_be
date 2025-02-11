@@ -4,7 +4,7 @@ import requests
 
 BASE_URL = r'https://docs.celonis.com/en/'
 LINKS_URL = r'https://docs.celonis.com/en/getting-started-with-the-celonis-platform.html'
-UNWANTED = ['Release Notes']
+UNWANTED = ['release-notes', 'planned-releases']
 
 def scrape_celonis_documentation(document_links:list[str]):
     documents = []
@@ -19,7 +19,9 @@ def extract_document_links() -> list[str]:
     resp = requests.get(LINKS_URL)
     soup = BeautifulSoup(resp.text, 'html.parser')
     sidebar = soup.find('ul', attrs={'class':['toc', 'nav', 'nav-site-sidebar']})
-    return list(map(lambda x: x.get('href'), sidebar.find_all('a', recursive=True)))
+    links = list(map(lambda x: x.get('href'), sidebar.find_all('a', recursive=True)))
+    links = list(filter(lambda x: all([u not in x for u in UNWANTED]), links))    
+    return links
 
 def extract_pql_function_documents():
     """

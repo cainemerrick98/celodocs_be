@@ -35,7 +35,8 @@ def is_table_element(tag:Tag):
 def is_pql_example(tag:Tag):
     if tag.name == 'table':
         if tag.find('table') is not None:
-            return tag.find_next('table').find_next('th').get_text(strip=True) == 'Query'
+            if tag.find_next('table').find_next('th') is not None:
+                return tag.find_next('table').find_next('th').get_text(strip=True) == 'Query'
     return False
 
 def extract_text(tag:Tag):
