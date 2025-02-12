@@ -19,8 +19,7 @@ def load_documents():
     return documents
 
 def load_client():
-    print(os.getenv('TOKEN_KEY'))
-    return Mistral(os.getenv('TOKEN_KEY'))
+    return Mistral(os.getenv('PROD_KEY'))
 
 model = SentenceTransformer('all-MiniLM-L6-v2')
 embeddings = load_embeddings()
@@ -179,14 +178,13 @@ def answer_query(query:str, documents:list[str]):
 
 
 if __name__ == '__main__':
+    print('---WELCOME TO CELODOCS API---')
     while True:
-        query = input('')
+        query = input('User: ')
         rqs = refine_query(query, client)
         print(rqs)
         
         queries = eval(rqs)
-
-        time.sleep(3)
 
         retirevals = []
         for q in queries:
@@ -196,14 +194,12 @@ if __name__ == '__main__':
 
         relevant = []
         for r in retirevals:
-            time.sleep(5)
             if eval(assert_document_relevance(query, r, client)):
                 relevant.append(r)
         
-        time.sleep(5)
         answer = answer_query(query, relevant)
 
-        print('\n')
+        print('Agent:\n')
         print(answer)
         print('\n')
 

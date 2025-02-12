@@ -71,7 +71,7 @@ def extract_pql_example(tag:Tag):
         "\n<pql_example>"
         f"Description: {description}\n"
         "Queries: " + ",".join(queries) + "\n"
-        "Input tables:" + "\n".join(input_tables) + "\n"
+        "Input tables:" + "\n".join(input_tables) + "\n" #TODO: extract table name
         f"Output:\n{output_table}"
         "</pql_example>\n"
     )
