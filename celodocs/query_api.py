@@ -73,7 +73,6 @@ def refine_query(query:str, client:Mistral) -> list[str]:
         ]
     ).choices[0].message.content
 
-
 def assert_document_relevance(query:str, document:str, client) -> str:
     prompt = f"""
     You are an AI assisstant that decides if a retrieved document is relevant for the answering of a query.
