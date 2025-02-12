@@ -35,10 +35,8 @@ def query_embeddings(query:str, embeddings=embeddings, model=model, n=10) -> np.
     cosine_similarities = np.dot(embeddings, query.T).squeeze()
     return np.argsort(cosine_similarities)[-n:][::-1]
 
-
 def retrieve_documents(index:np.ndarray, documents=documents) -> list[str]:
     return [documents[i] for i in index]
-
 
 def refine_query(query:str, client:Mistral) -> list[str]:
     prompt = f"""
