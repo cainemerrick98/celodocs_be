@@ -1,0 +1,304 @@
+MATCH_PROCESS
+Description
+MATCH_PROCESS matches the variants of a process against a given pattern.
+Similar functionality is provided by MATCH_PROCESS_REGEX. MATCH_PROCESS uses Nodes and Edges to match the cases. Nodes consist either of a single activity or a list of activities. Edges describe how the nodes are linked together.
+Syntax
+MATCH_PROCESS([ activity_table.string_column,] node(, node)* CONNECTED BY edge(, edge)*)
+activity_table.string_column: A string column of an activity table. Usually, the activity column of an activity table is used., node: NODE| OPTIONAL| LOOP| OPTIONAL_LOOP| STARTING| ENDING[ single_activity(, single_activity)*] AS node_name single_activity:[LIKE] activity(Activity name. LIKE allows you to use wildcards in your activity name. LIKE reacts case sensitive.), single_activity:[LIKE] activity(Activity name. LIKE allows you to use wildcards in your activity name. LIKE reacts case sensitive.), edge: DIRECT| EVENTUALLY[ edge_start_node, edge_end_node ] edge_start_node: node_name edge_end_node: node_name, edge_start_node: node_name, edge_end_node: node_name
+single_activity:[LIKE] activity(Activity name. LIKE allows you to use wildcards in your activity name. LIKE reacts case sensitive.)
+edge_start_node: node_name, edge_end_node: node_name
+Node
+A node consists of one or more activities. If multiple activities are given, it means one of those activities.
+Node Types
+NODE: Node which has to be part once in the case, without any restrictions on where the node has to be., STARTING: Node which has to happen at the beginning of a case., ENDING: Node which has to happen at the end of a case., LOOP: Node which occurs at least once but can also be repeated.
+Edge Types
+DIRECT: edge_end_node has to follow directly after the edge_start_node, EVENTUALLY: between edge_start_node and edge_end_node other activities can be placed
+Result
+MATCH_PROCESS returns an INT column, which flags all matching cases with 1 and all non matching cases with 0. The resulting column is temporarily added to the case table and is often used in combination with a filter.
+Tips
+Instead of specifying the activity column, it is also possible to use another string column of the activity table. For example, you can match cases with a specified sequence of user types.
+Examples
+Description: Here MATCH_PROCESS flags all cases in which one activity A is followed directly by activity B with a 1.
+Queries: "Activities_CASES"."CASE_ID", MATCH_PROCESS("Activities"."ACTIVITY", NODE['A'] as src, NODE['B'] as tgt CONNECTED BY DIRECT[ src, tgt])
+Input Tables: 
+Activities
+CASE_ID: string,ACTIVITY: string,TIMESTAMP: date
+'1','A',Tue Jan 01 2019 13:00:00.000
+'1','B',Tue Jan 01 2019 13:01:00.000
+'1','C',Tue Jan 01 2019 13:02:00.000
+'2','A',Tue Jan 01 2019 13:00:00.000
+'2','C',Tue Jan 01 2019 13:02:00.000
+'2','B',Tue Jan 01 2019 13:03:00.000
+CASE_ID: string
+CASE_ID: string,ACTIVITY: string,TIMESTAMP: date
+'1','A',Tue Jan 01 2019 13:00:00.000
+'1','B',Tue Jan 01 2019 13:01:00.000
+'1','C',Tue Jan 01 2019 13:02:00.000
+'2','A',Tue Jan 01 2019 13:00:00.000
+'2','C',Tue Jan 01 2019 13:02:00.000
+'2','B',Tue Jan 01 2019 13:03:00.000
+ACTIVITY: string
+CASE_ID: string
+'1'
+'2'
+TIMESTAMP: date
+Activities.CASE_ID,Activities_CASES.CASE_ID
+Output Table: 
+Column1: string,Column2: int
+'1',1
+'2',0
+
+CASE_ID: string, ACTIVITY: string, TIMESTAMP: date
+Description: Here is MATCH_PROCESS combined with a filter. The result are only cases in which one activity A is followed by activity B.
+Queries: FILTER MATCH_PROCESS("Activities"."ACTIVITY", NODE['A'] as src, NODE['B'] as tgt CONNECTED BY DIRECT[ src, tgt])= 1;, "Activities"."CASE_ID", "Activities"."ACTIVITY"
+Input Tables: 
+Activities
+CASE_ID: string,ACTIVITY: string,TIMESTAMP: date
+'1','A',Tue Jan 01 2019 13:00:00.000
+'1','B',Tue Jan 01 2019 13:01:00.000
+'1','C',Tue Jan 01 2019 13:02:00.000
+'2','A',Tue Jan 01 2019 13:00:00.000
+'2','C',Tue Jan 01 2019 13:02:00.000
+'2','B',Tue Jan 01 2019 13:03:00.000
+CASE_ID: string
+CASE_ID: string,ACTIVITY: string,TIMESTAMP: date
+'1','A',Tue Jan 01 2019 13:00:00.000
+'1','B',Tue Jan 01 2019 13:01:00.000
+'1','C',Tue Jan 01 2019 13:02:00.000
+'2','A',Tue Jan 01 2019 13:00:00.000
+'2','C',Tue Jan 01 2019 13:02:00.000
+'2','B',Tue Jan 01 2019 13:03:00.000
+ACTIVITY: string
+CASE_ID: string
+'1'
+'2'
+TIMESTAMP: date
+Activities.CASE_ID,Activities_CASES.CASE_ID
+Output Table: 
+Column1: string,Column2: string
+'1','A'
+'1','B'
+'1','C'
+
+CASE_ID: string, ACTIVITY: string, TIMESTAMP: date
+Description: If an activity has not only to be directly followed by another activity but can come any time later the keyword EVENTUALLY can be used. In this example MATCH_PROCESS flags all cases in which one activity A is followed eventually by activity B with a 1.
+Queries: "Activities_CASES"."CASE_ID", MATCH_PROCESS("Activities"."ACTIVITY", NODE['A'] as src, NODE['B'] as tgt CONNECTED BY EVENTUALLY[ src, tgt])
+Input Tables: 
+Activities
+CASE_ID: string,ACTIVITY: string,TIMESTAMP: date
+'1','A',Tue Jan 01 2019 13:00:00.000
+'1','B',Tue Jan 01 2019 13:01:00.000
+'1','C',Tue Jan 01 2019 13:02:00.000
+'2','A',Tue Jan 01 2019 13:00:00.000
+'2','C',Tue Jan 01 2019 13:02:00.000
+'2','B',Tue Jan 01 2019 13:03:00.000
+CASE_ID: string
+CASE_ID: string,ACTIVITY: string,TIMESTAMP: date
+'1','A',Tue Jan 01 2019 13:00:00.000
+'1','B',Tue Jan 01 2019 13:01:00.000
+'1','C',Tue Jan 01 2019 13:02:00.000
+'2','A',Tue Jan 01 2019 13:00:00.000
+'2','C',Tue Jan 01 2019 13:02:00.000
+'2','B',Tue Jan 01 2019 13:03:00.000
+ACTIVITY: string
+CASE_ID: string
+'1'
+'2'
+TIMESTAMP: date
+Activities.CASE_ID,Activities_CASES.CASE_ID
+Output Table: 
+Column1: string,Column2: int
+'1',1
+'2',1
+
+CASE_ID: string, ACTIVITY: string, TIMESTAMP: date
+Description: Here is an example in which node'node_ab' has two activities. This means that a matching case needs an activity C which comes either after A or B.
+Queries: "Activities_CASES"."CASE_ID", MATCH_PROCESS("Activities"."ACTIVITY", NODE['A','B'] as node_ab, NODE['C'] as node_c CONNECTED BY DIRECT[ node_ab, node_c])
+Input Tables: 
+Activities
+CASE_ID: string,ACTIVITY: string,TIMESTAMP: date
+'1','A',Tue Jan 01 2019 13:00:00.000
+'1','B',Tue Jan 01 2019 13:01:00.000
+'1','C',Tue Jan 01 2019 13:02:00.000
+'2','A',Tue Jan 01 2019 13:00:00.000
+'2','C',Tue Jan 01 2019 13:02:00.000
+'2','B',Tue Jan 01 2019 13:03:00.000
+CASE_ID: string
+CASE_ID: string,ACTIVITY: string,TIMESTAMP: date
+'1','A',Tue Jan 01 2019 13:00:00.000
+'1','B',Tue Jan 01 2019 13:01:00.000
+'1','C',Tue Jan 01 2019 13:02:00.000
+'2','A',Tue Jan 01 2019 13:00:00.000
+'2','C',Tue Jan 01 2019 13:02:00.000
+'2','B',Tue Jan 01 2019 13:03:00.000
+ACTIVITY: string
+CASE_ID: string
+'1'
+'2'
+TIMESTAMP: date
+Activities.CASE_ID,Activities_CASES.CASE_ID
+Output Table: 
+Column1: string,Column2: int
+'1',1
+'2',1
+
+CASE_ID: string, ACTIVITY: string, TIMESTAMP: date
+Description: Nodes can represent loops. Here matching cases can have between activity A and C at least one or more activities of type B.
+Queries: "Activities_CASES"."CASE_ID", MATCH_PROCESS("Activities"."ACTIVITY", NODE['A'] AS node_a, LOOP['B'] AS loop_b, NODE['C'] AS node_c CONNECTED BY DIRECT[ node_a, loop_b], DIRECT[ loop_b, node_c])
+Input Tables: 
+Activities
+CASE_ID: string,ACTIVITY: string,TIMESTAMP: date
+'1','A',Tue Jan 01 2019 13:00:00.000
+'1','B',Tue Jan 01 2019 13:01:00.000
+'1','B',Tue Jan 01 2019 13:02:00.000
+'1','C',Tue Jan 01 2019 13:04:00.000
+'2','A',Tue Jan 01 2019 13:00:00.000
+'2','B',Tue Jan 01 2019 13:01:00.000
+'2','C',Tue Jan 01 2019 13:02:00.000
+'3','A',Tue Jan 01 2019 13:00:00.000
+'3','C',Tue Jan 01 2019 13:02:00.000
+CASE_ID: string
+CASE_ID: string,ACTIVITY: string,TIMESTAMP: date
+'1','A',Tue Jan 01 2019 13:00:00.000
+'1','B',Tue Jan 01 2019 13:01:00.000
+'1','B',Tue Jan 01 2019 13:02:00.000
+'1','C',Tue Jan 01 2019 13:04:00.000
+'2','A',Tue Jan 01 2019 13:00:00.000
+'2','B',Tue Jan 01 2019 13:01:00.000
+'2','C',Tue Jan 01 2019 13:02:00.000
+'3','A',Tue Jan 01 2019 13:00:00.000
+'3','C',Tue Jan 01 2019 13:02:00.000
+ACTIVITY: string
+CASE_ID: string
+'1'
+'2'
+'3'
+TIMESTAMP: date
+Activities.CASE_ID,Activities_CASES.CASE_ID
+Output Table: 
+Column1: string,Column2: int
+'1',1
+'2',1
+'3',0
+
+CASE_ID: string, ACTIVITY: string, TIMESTAMP: date
+Description: A loop node can also consist of multiple activities. PROCESS_MATCH accepts than all given activities, without regarding order or number of occurrences till another activity is found.
+Queries: "Activities_CASES"."CASE_ID", MATCH_PROCESS("Activities"."ACTIVITY", NODE['A'] AS node_a, LOOP['B','C'] AS loop_bc, NODE['D'] AS node_d CONNECTED BY DIRECT[ node_a, loop_bc], DIRECT[ loop_bc, node_d])
+Input Tables: 
+Activities
+CASE_ID: string,ACTIVITY: string,TIMESTAMP: date
+'1','A',Tue Jan 01 2019 13:00:00.000
+'1','C',Tue Jan 01 2019 13:01:00.000
+'1','B',Tue Jan 01 2019 13:02:00.000
+'1','B',Tue Jan 01 2019 13:03:00.000
+'1','D',Tue Jan 01 2019 13:05:00.000
+CASE_ID: string
+CASE_ID: string,ACTIVITY: string,TIMESTAMP: date
+'1','A',Tue Jan 01 2019 13:00:00.000
+'1','C',Tue Jan 01 2019 13:01:00.000
+'1','B',Tue Jan 01 2019 13:02:00.000
+'1','B',Tue Jan 01 2019 13:03:00.000
+'1','D',Tue Jan 01 2019 13:05:00.000
+ACTIVITY: string
+CASE_ID: string
+'1'
+TIMESTAMP: date
+Activities.CASE_ID,Activities_CASES.CASE_ID
+Output Table: 
+Column1: string,Column2: int
+'1',1
+
+CASE_ID: string, ACTIVITY: string, TIMESTAMP: date
+Description: Nodes can be forced to be at the start or the end of a case.
+Queries: "Activities_CASES"."CASE_ID", MATCH_PROCESS("Activities"."ACTIVITY", STARTING['A'] AS node_a, ENDING['B'] AS node_b CONNECTED BY DIRECT[ node_a, node_b])
+Input Tables: 
+Activities
+CASE_ID: string,ACTIVITY: string,TIMESTAMP: date
+'1','A',Tue Jan 01 2019 13:00:00.000
+'1','B',Tue Jan 01 2019 13:01:00.000
+'2','A',Tue Jan 01 2019 13:02:00.000
+'2','B',Tue Jan 01 2019 13:03:00.000
+'2','C',Tue Jan 01 2019 13:05:00.000
+'3','A',Tue Jan 01 2019 13:06:00.000
+'3','A',Tue Jan 01 2019 13:07:00.000
+'3','B',Tue Jan 01 2019 13:08:00.000
+CASE_ID: string
+CASE_ID: string,ACTIVITY: string,TIMESTAMP: date
+'1','A',Tue Jan 01 2019 13:00:00.000
+'1','B',Tue Jan 01 2019 13:01:00.000
+'2','A',Tue Jan 01 2019 13:02:00.000
+'2','B',Tue Jan 01 2019 13:03:00.000
+'2','C',Tue Jan 01 2019 13:05:00.000
+'3','A',Tue Jan 01 2019 13:06:00.000
+'3','A',Tue Jan 01 2019 13:07:00.000
+'3','B',Tue Jan 01 2019 13:08:00.000
+ACTIVITY: string
+CASE_ID: string
+'1'
+'2'
+'3'
+TIMESTAMP: date
+Activities.CASE_ID,Activities_CASES.CASE_ID
+Output Table: 
+Column1: string,Column2: int
+'1',1
+'2',0
+'3',0
+
+CASE_ID: string, ACTIVITY: string, TIMESTAMP: date
+Description: It is not required to match cases based on the activity column. In this example, all cases where user type A is directly followed by user type B are flagged with a 1.
+Queries: "Cases"."CASE_ID", MATCH_PROCESS("Activities"."USERTYPE", NODE['A'] as src, NODE['B'] as tgt CONNECTED BY DIRECT[ src, tgt])
+Input Tables: 
+Activities
+CASE_ID: string,ACTIVITY: string,TIMESTAMP: date,USERTYPE: string
+'1','X',Tue Jan 01 2019 13:00:00.000,'A'
+'1','Y',Tue Jan 01 2019 13:01:00.000,'B'
+'1','Z',Tue Jan 01 2019 13:02:00.000,'A'
+'2','X',Tue Jan 01 2019 13:00:00.000,'B'
+'2','Z',Tue Jan 01 2019 13:02:00.000,'A'
+'2','Y',Tue Jan 01 2019 13:03:00.000,'A'
+CASE_ID: string
+CASE_ID: string,ACTIVITY: string,TIMESTAMP: date,USERTYPE: string
+'1','X',Tue Jan 01 2019 13:00:00.000,'A'
+'1','Y',Tue Jan 01 2019 13:01:00.000,'B'
+'1','Z',Tue Jan 01 2019 13:02:00.000,'A'
+'2','X',Tue Jan 01 2019 13:00:00.000,'B'
+'2','Z',Tue Jan 01 2019 13:02:00.000,'A'
+'2','Y',Tue Jan 01 2019 13:03:00.000,'A'
+ACTIVITY: string
+CASE_ID: string
+'1'
+'2'
+TIMESTAMP: date
+Activities.CASE_ID,Cases.CASE_ID
+Output Table: 
+Column1: string,Column2: int
+'1',1
+'2',0
+
+CASE_ID: string, ACTIVITY: string, TIMESTAMP: date, USERTYPE: string
+Description: 
+Queries: FILTER MATCH_PROCESS("Activities"."ACTIVITY", NODE[ LIKE'A%'] as src, NODE['C'] as tgt CONNECTED BY DIRECT[ src, tgt])= 1;, "Activities"."CASE_ID", "Activities"."ACTIVITY"
+Input Tables: 
+Activities
+CASE_ID: string,ACTIVITY: string,Column3: date,Column4: date
+'1','AB',Tue Jan 01 2019 13:00:00.000,Tue Jan 01 2019 13:02:00.000
+'1','B',Tue Jan 01 2019 13:02:00.000,Tue Jan 01 2019 13:08:00.000
+'1','C',Tue Jan 01 2019 13:03:00.000,Tue Jan 01 2019 13:04:00.000
+'1','D',Tue Jan 01 2019 13:06:00.000,Tue Jan 01 2019 13:07:00.000
+CASE_ID: string
+CASE_ID: string,ACTIVITY: string,Column3: date,Column4: date
+'1','AB',Tue Jan 01 2019 13:00:00.000,Tue Jan 01 2019 13:02:00.000
+'1','B',Tue Jan 01 2019 13:02:00.000,Tue Jan 01 2019 13:08:00.000
+'1','C',Tue Jan 01 2019 13:03:00.000,Tue Jan 01 2019 13:04:00.000
+'1','D',Tue Jan 01 2019 13:06:00.000,Tue Jan 01 2019 13:07:00.000
+Output Table: 
+Column1: string,Column2: string
+'1','AB'
+'1','B'
+'1','C'
+'1','D'
+
+CASE_ID: string, ACTIVITY: string, Column3: date, Column4: date
+See also:
+PROCESS EQUALS, MATCH_ACTIVITIES

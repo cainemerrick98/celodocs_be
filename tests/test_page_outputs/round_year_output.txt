@@ -1,0 +1,25 @@
+ROUND_YEAR
+Description
+This function rounds a DATE input down to the year by setting its MONTH, DAY, HOUR, MINUTE, SECOND and MILLISECOND values to their ground state.
+Syntax
+ROUND_YEAR( table.date_column)
+NULL handling
+If the input value is NULL, then the result is NULL as well.
+Example
+Description: Round dates down to the year:
+Queries: ROUND_YEAR("Table1"."Date")
+Input Tables: 
+Table1
+Date: date
+Mon May 08 2006 23:59:59.999
+Fri Dec 31 1999 23:59:59.999
+Fri Jan 01 2016 00:59:59.000
+Sat Jan 01 1994 00:00:00.000
+null
+Output Table: 
+Column1: date
+Sun Jan 01 2006 00:00:00.000
+Fri Jan 01 1999 00:00:00.000
+Fri Jan 01 2016 00:00:00.000
+Sat Jan 01 1994 00:00:00.000
+null
