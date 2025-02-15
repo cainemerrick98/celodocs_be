@@ -164,12 +164,12 @@ def answer_query(query:str, documents:list[str]):
 
     Provide an answer.
     """
-    return client.chat.complete(
+    return client.chat.stream(
         model = MODEL,
         messages=[
             {"role":"system", "content":prompt}
         ]
-    ).choices[0].message.content
+    )
 
 
 
@@ -194,10 +194,10 @@ if __name__ == '__main__':
             if eval(assert_document_relevance(query, r, client)):
                 relevant.append(r)
         
-        answer = answer_query(query, relevant)
 
         print('Agent:\n')
-        print(answer)
+        for chunk in answer_query(query, relevant):
+            print(chunk.data.choices[0].delta.content, end='', flush=True)
         print('\n')
 
         
