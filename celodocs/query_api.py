@@ -186,8 +186,9 @@ if __name__ == '__main__':
         retirevals = []
         for q in queries:
             index = query_embeddings(q)
-            retirevals.extend(retrieve_documents(index))
+            retirevals.extend(retrieve_documents(index))    
 
+        retirevals = list(set(retirevals)) #remove duplicates
 
         relevant = []
         for r in retirevals:
