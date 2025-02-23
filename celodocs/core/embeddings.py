@@ -5,7 +5,8 @@ from nltk.tokenize import sent_tokenize
 from nltk import download
 import json
 from celodocs.settings.config import settings
-
+from celodocs.core.document_collection import Document
+from dataclasses import asdict
 
 download('punkt_tab')
 
@@ -18,8 +19,8 @@ class DocumentPreprocessor:
         return cls.table.search(string) or cls.pql_example.search(string)
 
     @classmethod
-    def extract_elements(cls, document: str) -> list[str]:
-        elements = cls.table.split(document)
+    def extract_elements(cls, content: str) -> list[str]:
+        elements = cls.table.split(content)
         split_elements = []
 
         for elem in elements:
@@ -43,8 +44,8 @@ class DocumentEmbedder:
         self.overlap = settings.overlap
         self.preprocessor = DocumentPreprocessor()
 
-    def chunk_document(self, document: str) -> list[str]:
-        processed_document = self.preprocessor.extract_elements(document)
+    def chunk_document(self, document: Document) -> list[str]:
+        processed_document = self.preprocessor.extract_elements(document.content)
 
         chunks = []
         current_chunk = []
@@ -76,20 +77,22 @@ class DocumentEmbedder:
 
     def create_embeddings(
         self,
-        documents: list[str],
+        documents: list[Document],
         embeddings_path: str = settings.embeddings_path,
         documents_path: str = settings.documents_path
     ):
         all_chunks = []
         for doc in documents:
             chunks = self.chunk_document(doc)
-            all_chunks.extend(chunks)
+            for chunk in chunks:
+                all_chunks.append(Document(title=doc.title, content=chunk, link=doc.link))
+                
         
-        embeddings = self.model.encode(all_chunks)
+        embeddings = self.model.encode([chunk.content for chunk in all_chunks])
 
         np.save(embeddings_path, embeddings)
         with open(documents_path, "w") as file:
-            json.dump(all_chunks, file)
+            json.dump([asdict(chunk) for chunk in all_chunks], file)
         
         return embeddings, all_chunks
 

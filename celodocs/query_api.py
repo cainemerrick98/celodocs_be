@@ -4,7 +4,7 @@ import os
 import json
 from mistralai import Mistral
 from dotenv import load_dotenv
-import time
+from celodocs.core.document_collection import Document
 
 load_dotenv()
 
@@ -35,7 +35,7 @@ def query_embeddings(query:str, embeddings=embeddings, model=model, n=10) -> np.
     cosine_similarities = np.dot(embeddings, query.T).squeeze()
     return np.argsort(cosine_similarities)[-n:][::-1]
 
-def retrieve_documents(index:np.ndarray, documents=documents) -> list[str]:
+def retrieve_documents(index:np.ndarray, documents:list[Document]) -> list[Document]:
     return [documents[i] for i in index]
 
 def refine_query(query:str, client:Mistral) -> list[str]:
@@ -200,6 +200,10 @@ if __name__ == '__main__':
         for chunk in answer_query(query, relevant):
             print(chunk.data.choices[0].delta.content, end='', flush=True)
         print('\n')
+
+        print('Sources:')
+        for r in retirevals:
+            print(r.link, end=', ')
 
         
 

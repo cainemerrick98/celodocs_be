@@ -1,5 +1,6 @@
 import unittest
 from celodocs.core.embeddings import DocumentPreprocessor, DocumentEmbedder
+from celodocs.core.document_collection import Document
 import os
 
 class TestDocumentPreprocessor(unittest.TestCase):
@@ -50,23 +51,27 @@ class TestDocumentEmbedder(unittest.TestCase):
         self.embedder = DocumentEmbedder()
 
     def test_chunk_document_simple(self):
-        text = "Short document for testing."
-        chunks = self.embedder.chunk_document(text)
+        doc = Document(content="Short document for testing.", title="Test", link="http://test.com")
+        chunks = self.embedder.chunk_document(doc)
         self.assertEqual(chunks, ["Short document for testing."])
 
     def test_chunk_document_with_table(self):
-        text = "Before. <table>content</table> After."
-        chunks = self.embedder.chunk_document(text)
+        doc = Document(content="Before. <table>content</table> After.", title="Test", link="http://test.com")
+        chunks = self.embedder.chunk_document(doc)
         self.assertEqual(chunks, ["Before.", "content", "After."])
 
     def test_chunk_document_long(self):
         # Create a long document that exceeds max_tokens
         long_text = " ".join(["word"] * 300)  # Should exceed default max_tokens of 256
-        chunks = self.embedder.chunk_document(long_text)
+        doc = Document(content=long_text, title="Test", link="http://test.com")
+        chunks = self.embedder.chunk_document(doc)
         self.assertTrue(len(chunks) > 1)  # Should be split into multiple chunks
 
     def test_create_embeddings(self):
-        documents = ["Test document one.", "Test document two."]
+        documents = [
+            Document(content="Test document one.", title="Test 1", link="http://test1.com"),
+            Document(content="Test document two.", title="Test 2", link="http://test2.com")
+        ]
         embeddings_path = "test_embeddings.npy"
         documents_path = "test_documents.json"
         
@@ -91,4 +96,3 @@ class TestDocumentEmbedder(unittest.TestCase):
                 os.remove(embeddings_path)
             if os.path.exists(documents_path):
                 os.remove(documents_path)
-
