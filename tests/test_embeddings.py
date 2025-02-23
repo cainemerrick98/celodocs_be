@@ -1,52 +1,94 @@
 import unittest
-import celodocs.embeddings as embeddings
+from celodocs.core.embeddings import DocumentPreprocessor, DocumentEmbedder
+import os
 
-class TestSpecialPatterns(unittest.TestCase):
-
+class TestDocumentPreprocessor(unittest.TestCase):
     def setUp(self):
-        return super().setUp()
-    
-    def test_special_pattern_table(self):
-        table_ptrn = '<table>1,2,3,4,5</table>'
-        splits = embeddings.SpecialPatterns.table.split(table_ptrn)
-        self.assertTrue(splits[1], '1,2,3,4,5')
-    
-    def test_special_pattern_split_produces_no_empties(self):
-        table_ptrn = '1,2,3,4,5'
-        splits = embeddings.SpecialPatterns.table.split(table_ptrn)
-        self.assertTrue(splits[0], '1,2,3,4,5')
+        self.preprocessor = DocumentPreprocessor()
 
-    def test_special_pattern_pql_example(self):
-        table_ptrn = '<pql_example>1,2,3,4,5</pql_example>'
-        splits = embeddings.SpecialPatterns.pql_example.split(table_ptrn)
-        self.assertTrue(splits[1], '1,2,3,4,5')
-    
-    def test_special_pattern_match_true(self):
-        table_ptrn = 'before the pql example<pql_example>1,2,3,4,5</pql_example>after the pql example'
-        self.assertTrue(embeddings.SpecialPatterns.match(table_ptrn))
+    def test_match_table(self):
+        text = "Some text <table>table content</table> more text"
+        self.assertTrue(DocumentPreprocessor.match(text))
+        
+    def test_match_pql(self):
+        text = "Some text <pql_example>SELECT *</pql_example> more text"
+        self.assertTrue(DocumentPreprocessor.match(text))
+        
+    def test_no_match(self):
+        text = "Regular text without special elements"
+        self.assertFalse(DocumentPreprocessor.match(text))
 
-    def test_special_pattern_extract_elements(self):
-        document = '<pql_example>1,2,3,4,5</pql_example>Hi its caine here<table>1,2,3,4,5</table>Hi again'
-        elements = embeddings.SpecialPatterns.extract_elements(document)
-        self.assertEqual(len(elements), 4)
-        self.assertEqual(elements[3], 'Hi again')
+    def test_extract_elements_simple(self):
+        text = "First sentence. Second sentence."
+        elements = DocumentPreprocessor.extract_elements(text)
+        self.assertEqual(elements, ["First sentence.", "Second sentence."])
 
-class TestEmbeddings(unittest.TestCase):
+    def test_extract_elements_with_table(self):
+        text = "Before table. <table>table content</table> After table."
+        elements = DocumentPreprocessor.extract_elements(text)
+        self.assertEqual(elements, ["Before table.", "<table>table content</table>", "After table."])
 
+    def test_extract_elements_with_pql(self):
+        text = "Before PQL. <pql_example>SELECT *</pql_example> After PQL."
+        elements = DocumentPreprocessor.extract_elements(text)
+        self.assertEqual(elements, ["Before PQL.", "<pql_example>SELECT *</pql_example>", "After PQL."])
+
+    def test_extract_elements_complex(self):
+        text = "Start. <table>T1</table> Middle. <pql_example>Q1</pql_example> End."
+        elements = DocumentPreprocessor.extract_elements(text)
+        self.assertEqual(elements, [
+            "Start.",
+            "<table>T1</table>",
+            "Middle.",
+            "<pql_example>Q1</pql_example>",
+            "End."
+        ])
+
+
+class TestDocumentEmbedder(unittest.TestCase):
     def setUp(self):
-        return super().setUp()
-    
-    def test_chunk_simple_text(self):
-        text = 'Hello this should be easy to chunk. But is it'
-        chunks = embeddings.chunk_document(text)
-        self.assertIsInstance(chunks, list)
-        self.assertEqual(len(chunks), 1)
-        self.assertEqual(chunks[0], text)
+        self.embedder = DocumentEmbedder()
 
-    def test_chunk_with_pql_example(self):
-        document = 'Hello. <pql_example>1,2,3,4</pql_example>Im final chunk'
-        chunks = embeddings.chunk_document(document)
-        self.assertEqual(len(chunks), 3)
-        self.assertEqual(chunks[0], 'Hello.')
-        self.assertEqual(chunks[1], '1,2,3,4')
-        self.assertEqual(chunks[2], 'Im final chunk')
+    def test_chunk_document_simple(self):
+        text = "Short document for testing."
+        chunks = self.embedder.chunk_document(text)
+        self.assertEqual(chunks, ["Short document for testing."])
+
+    def test_chunk_document_with_table(self):
+        text = "Before. <table>content</table> After."
+        chunks = self.embedder.chunk_document(text)
+        self.assertEqual(chunks, ["Before.", "content", "After."])
+
+    def test_chunk_document_long(self):
+        # Create a long document that exceeds max_tokens
+        long_text = " ".join(["word"] * 300)  # Should exceed default max_tokens of 256
+        chunks = self.embedder.chunk_document(long_text)
+        self.assertTrue(len(chunks) > 1)  # Should be split into multiple chunks
+
+    def test_create_embeddings(self):
+        documents = ["Test document one.", "Test document two."]
+        embeddings_path = "test_embeddings.npy"
+        documents_path = "test_documents.json"
+        
+        try:
+            embeddings, chunks = self.embedder.create_embeddings(
+                documents,
+                embeddings_path=embeddings_path,
+                documents_path=documents_path
+            )
+            
+            # Check if files were created
+            self.assertTrue(os.path.exists(embeddings_path))
+            self.assertTrue(os.path.exists(documents_path))
+            
+            # Check embeddings shape
+            self.assertEqual(len(embeddings), len(chunks))
+            self.assertEqual(embeddings.shape[1], 384)  # MiniLM-L6-v2 produces 384-dimensional embeddings
+            
+        finally:
+            # Cleanup
+            if os.path.exists(embeddings_path):
+                os.remove(embeddings_path)
+            if os.path.exists(documents_path):
+                os.remove(documents_path)
+

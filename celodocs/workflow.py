@@ -1,4 +1,4 @@
-from celodocs.embeddings import create_embeddings
+from celodocs.core.embeddings import create_embeddings
 from celodocs.scraper import scrape_celonis_documentation, extract_pql_function_documents, extract_document_links
 import os
 
