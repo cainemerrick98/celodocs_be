@@ -1,9 +1,9 @@
-from sentence_transformers import SentenceTransformer
 import numpy as np
 import os
 import json
 from mistralai import Mistral
 from dotenv import load_dotenv
+from sentence_transformers import SentenceTransformer
 from celodocs.core.document_collection import Document
 
 load_dotenv()
@@ -21,12 +21,7 @@ def load_documents():
 def load_client():
     return Mistral(os.getenv('PROD_KEY'))
 
-model = SentenceTransformer('all-MiniLM-L6-v2')
-embeddings = load_embeddings()
-documents = load_documents()
-client = load_client()
-
-def query_embeddings(query:str, embeddings=embeddings, model=model, n=10) -> np.ndarray:
+def query_embeddings(query:str, embeddings:np.ndarray, model:SentenceTransformer, n=10) -> np.ndarray:
     """
     returns the index of the top n matching embeddings
     """
@@ -71,7 +66,7 @@ def refine_query(query:str, client:Mistral) -> list[str]:
         ]
     ).choices[0].message.content
 
-def assert_document_relevance(query:str, document:str, client) -> str:
+def assert_document_relevance(query:str, document:str, client:Mistral) -> str:
     prompt = f"""
     You are an AI assisstant that decides if a retrieved document is relevant for the answering of a query.
     
@@ -147,7 +142,7 @@ def assert_document_relevance(query:str, document:str, client) -> str:
         ]
     ).choices[0].message.content
 
-def answer_query(query:str, documents:list[str]):
+def answer_query(query:str, documents:list[str], client:Mistral):
     prompt = f"""
     You are an AI assisstant that answers a user query based on the retrieved documents. 
     Other AI assistants have already asserted that the documents are relevant.
@@ -170,43 +165,3 @@ def answer_query(query:str, documents:list[str]):
             {"role":"system", "content":prompt}
         ]
     )
-
-
-
-
-if __name__ == '__main__':
-    print('---WELCOME TO CELODOCS API---')
-    while True:
-        query = input('User: ')
-        rqs = refine_query(query, client)
-        print(rqs)
-        
-        queries = eval(rqs)
-
-        retirevals = []
-        for q in queries:
-            index = query_embeddings(q)
-            retirevals.extend(retrieve_documents(index))
-
-        retirevals = list(set(retirevals)) #remove duplicates
-
-        relevant = []
-        for r in retirevals:
-            if eval(assert_document_relevance(query, r, client)):
-                relevant.append(r)
-        
-
-        print('Agent:\n')
-        for chunk in answer_query(query, relevant):
-            print(chunk.data.choices[0].delta.content, end='', flush=True)
-        print('\n')
-
-        print('Sources:')
-        for r in retirevals:
-            print(r.link, end=', ')
-
-        
-
-        
-            
-        
