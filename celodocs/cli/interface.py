@@ -13,7 +13,6 @@ if __name__ == '__main__':
         query = input('User: ')
         rqs = refine_query(query, client)
         
-        
         queries = eval(rqs)
 
         retirevals = []

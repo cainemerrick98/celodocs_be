@@ -143,6 +143,7 @@ def assert_document_relevance(query:str, document:str, client:Mistral) -> str:
     ).choices[0].message.content
 
 def answer_query(query:str, documents:list[str], client:Mistral):
+    documents = '\n\n'.join(documents)
     prompt = f"""
     You are an AI assisstant that answers a user query based on the retrieved documents. 
     Other AI assistants have already asserted that the documents are relevant.
@@ -150,9 +151,9 @@ def answer_query(query:str, documents:list[str], client:Mistral):
     Only use the documents provided to answer the query. 
     
 
-    Retireved Documents
+    Retrieved Documents
     ___________________
-    {"\n\n".join(documents)}
+    {documents}
     ___________________
 
     Query: {query}
