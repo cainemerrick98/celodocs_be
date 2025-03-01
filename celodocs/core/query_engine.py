@@ -2,13 +2,9 @@ import numpy as np
 import os
 import json
 from mistralai import Mistral
-from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
 from celodocs.core.document_collection import Document
-
-load_dotenv()
-
-MODEL = "mistral-large-latest"
+from celodocs.settings.config import settings
 
 def load_embeddings():
     return np.load(os.path.join(os.getcwd(), 'embeddings.npy'))
@@ -19,7 +15,8 @@ def load_documents():
     return documents
 
 def load_client():
-    return Mistral(os.getenv('PROD_KEY'))
+    print(f"Loading client with key: {settings.mistral_key}")
+    return Mistral(api_key='xbE7fjTr4cJBVpUtUwhyjybquuNeVU4r')
 
 def query_embeddings(query:str, embeddings:np.ndarray, model:SentenceTransformer, n=10) -> np.ndarray:
     """
@@ -60,7 +57,7 @@ def refine_query(query:str, client:Mistral) -> list[str]:
     ["query1", "query2"]
     """
     return client.chat.complete(
-        model = MODEL,
+        model = settings.mistral_model,
         messages=[
             {"role":"system", "content":prompt}
         ]
@@ -136,7 +133,7 @@ def assert_document_relevance(query:str, document:str, client:Mistral) -> str:
     return only True or False. Do not return reason. For example, 'True'
     """
     return client.chat.complete(
-        model = MODEL,
+        model = settings.mistral_model,
         messages=[
             {"role":"system", "content":prompt}
         ]
@@ -161,7 +158,7 @@ def answer_query(query:str, documents:list[str], client:Mistral):
     Provide an answer.
     """
     return client.chat.stream(
-        model = MODEL,
+        model = settings.mistral_model,
         messages=[
             {"role":"system", "content":prompt}
         ]
