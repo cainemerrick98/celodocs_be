@@ -83,6 +83,7 @@ class DocumentEmbedder:
     ):
         all_chunks = []
         for doc in documents:
+            print(f"Chunking document: {doc.title}")
             chunks = self.chunk_document(doc)
             for chunk in chunks:
                 all_chunks.append(Document(title=doc.title, content=chunk, link=doc.link))

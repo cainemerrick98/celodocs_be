@@ -140,6 +140,7 @@ class DocumentCollector:
         return [link for link in links if self._is_wanted_link(link)]
 
     def _collect_single_document(self, link: str) -> Document:
+        print(f"Collecting document: {link}")
         """Collects and processes a single document"""
         full_url = f"{settings.base_url}{link}"
         soup = self._get_soup(full_url)
