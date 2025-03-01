@@ -16,7 +16,7 @@ def load_documents():
 
 def load_client():
     print(f"Loading client with key: {settings.mistral_key}")
-    return Mistral(api_key='xbE7fjTr4cJBVpUtUwhyjybquuNeVU4r')
+    return Mistral(api_key=settings.mistral_key)
 
 def query_embeddings(query:str, embeddings:np.ndarray, model:SentenceTransformer, n=10) -> np.ndarray:
     """
