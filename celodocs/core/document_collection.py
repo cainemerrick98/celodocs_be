@@ -154,7 +154,7 @@ class DocumentCollector:
 
     def _extract_title(self, soup: BeautifulSoup) -> Optional[str]:
         """Extracts the document title"""
-        title_tag = soup.find('h1')
+        title_tag = soup.title
         return title_tag.get_text(strip=True) if title_tag else None
 
     def _extract_content_tags(self, soup: BeautifulSoup) -> List[Tag]:

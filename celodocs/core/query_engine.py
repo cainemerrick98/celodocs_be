@@ -163,3 +163,33 @@ def answer_query(query:str, documents:list[str], client:Mistral):
             {"role":"system", "content":prompt}
         ]
     )
+
+def process_query(query:str, embeddings:np.ndarray, model:SentenceTransformer, documents:list[Document], client:Mistral):
+    print(f"query: {query}")
+    refined_queries = eval(refine_query(query, client))
+
+    print(f"refined_queries: {len(refined_queries)}")
+    print(f"refined_queries: {refined_queries}")
+
+    all_retrievals = []
+    for refined_query in refined_queries:
+        print(f"refined_query: {refined_query}")
+        index = query_embeddings(refined_query, embeddings, model)
+        print(f"index: {index}")
+        all_retrievals.extend(retrieve_documents(index, documents))
+    
+    print(f"all_retrievals: {len(all_retrievals)}")
+    print(f"all_retrievals: {[i['title'] for i in all_retrievals]}")
+    unique_retrievals = list({doc['content']:doc for doc in all_retrievals}.values())
+
+    print(f"unique_retrievals: {len(unique_retrievals)}")
+
+    relevant_docs = [
+        doc for doc in unique_retrievals
+        if eval(assert_document_relevance(query, doc['content'], client))
+    ]
+    print(f"relevant_docs: {len(relevant_docs)}")
+    return relevant_docs
+        
+        
+        

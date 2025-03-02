@@ -10,6 +10,7 @@ from celodocs.core.query_engine import (
     assert_document_relevance, 
     query_embeddings, 
     retrieve_documents,
+    process_query,
     load_embeddings,
     load_documents,
     load_client
@@ -40,40 +41,25 @@ model = SentenceTransformer('all-MiniLM-L6-v2')
 embeddings = load_embeddings()
 documents = load_documents()
 client = load_client()
-    
+
+print(f"embeddings: {len(embeddings)}")
+print(f"documents: {len(documents)}")
 
 @app.post("/chat", response_model=Answer)
 async def chat(request: Request):
     query = await request.json()
     print(query)
-    rqs = refine_query(query, client)
+    relevant_docs = process_query(query, embeddings, model, documents, client)
         
-    queries = eval(rqs)
-
-    retirevals = []
-    for q in queries:
-        index = query_embeddings(q, embeddings, model)
-        retirevals.extend(retrieve_documents(index, documents))
-
-    # retirevals = retirevals #remove duplicates
-
-    relevant = []
-    for r in retirevals:
-        if eval(assert_document_relevance(query, r['content'], client)):
-            relevant.append(r)
-
     response = ""
-    relevant_docs = [r['content'] for r in relevant]
-    for chunk in answer_query(query, relevant_docs, client):
+    for chunk in answer_query(query, [doc['content'] for doc in relevant_docs], client):
         response += chunk.data.choices[0].delta.content
     
     sources = []
-    for r in relevant:
+    for r in relevant_docs:
         sources.append(Source(title=r['title'], link=r['link']))
 
-    print(sources)
 
-    print(response)
     return Answer(answer=response, sources=sources)
 
 
